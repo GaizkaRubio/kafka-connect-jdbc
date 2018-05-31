@@ -247,6 +247,9 @@ public class JdbcSourceConnectorConfig extends AbstractConfig {
       + "In most cases it only makes sense to have either TABLE or VIEW.";
   private static final String TABLE_TYPE_DISPLAY = "Table Types";
 
+  public static final String KEY_COLUMN = "key.column";
+  private static final String KEY_COLUMN_DOC = "Column value to use as key in kafka";
+
   public static ConfigDef baseConfigDef() {
     ConfigDef config = new ConfigDef();
     addDatabaseOptions(config);

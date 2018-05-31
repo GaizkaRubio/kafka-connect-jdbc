@@ -16,6 +16,7 @@
 
 package io.confluent.connect.jdbc.source;
 
+import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.source.SourceRecord;
@@ -39,8 +40,9 @@ public class BulkTableQuerier extends TableQuerier {
   private static final Logger log = LoggerFactory.getLogger(BulkTableQuerier.class);
 
   public BulkTableQuerier(QueryMode mode, String name, String schemaPattern,
-                          String topicPrefix, NumericMapping mapNumerics) {
-    super(mode, name, topicPrefix, schemaPattern, mapNumerics);
+                          String topicPrefix, NumericMapping mapNumerics,
+                          String keyColumn) {
+    super(mode, name, topicPrefix, schemaPattern, mapNumerics, keyColumn);
   }
 
   @Override
@@ -69,7 +71,7 @@ public class BulkTableQuerier extends TableQuerier {
   @Override
   public SourceRecord extractRecord() throws SQLException {
     Struct record = DataConverter.convertRecord(schema, resultSet, mapNumerics);
-    // TODO: key from primary key? partition?
+    String key = DataConverter.extractKey(resultSet, keyColumn);
     final String topic;
     final Map<String, String> partition;
     switch (mode) {
@@ -85,7 +87,8 @@ public class BulkTableQuerier extends TableQuerier {
       default:
         throw new ConnectException("Unexpected query mode: " + mode);
     }
-    return new SourceRecord(partition, null, topic, record.schema(), record);
+    return new SourceRecord(partition, null, topic,
+      Schema.STRING_SCHEMA, key, record.schema(), record);
   }
 
   @Override

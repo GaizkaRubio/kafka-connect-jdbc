@@ -49,9 +49,15 @@ abstract class TableQuerier implements Comparable<TableQuerier> {
   protected PreparedStatement stmt;
   protected ResultSet resultSet;
   protected Schema schema;
+  protected String keyColumn;
 
   public TableQuerier(QueryMode mode, String nameOrQuery, String topicPrefix,
                       String schemaPattern, NumericMapping mapNumerics) {
+    this(mode, nameOrQuery, topicPrefix, schemaPattern, mapNumerics, null);
+  }
+
+  public TableQuerier(QueryMode mode, String nameOrQuery, String topicPrefix,
+                      String schemaPattern, NumericMapping mapNumerics, String keyColumn) {
     this.mode = mode;
     this.schemaPattern = schemaPattern;
     this.name = mode.equals(QueryMode.TABLE) ? nameOrQuery : null;
@@ -59,6 +65,7 @@ abstract class TableQuerier implements Comparable<TableQuerier> {
     this.topicPrefix = topicPrefix;
     this.mapNumerics = mapNumerics;
     this.lastUpdate = 0;
+    this.keyColumn = keyColumn;
   }
 
   public long getLastUpdate() {

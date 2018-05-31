@@ -81,6 +81,15 @@ public class DataConverter {
     return struct;
   }
 
+  public static String extractKey(ResultSet resultSet, String keyColumn) {
+    String result = null;
+    try {
+      result = resultSet.getString(keyColumn);
+    } catch (SQLException e) {
+      log.warn("Key column not found returning null as key:", e);
+    }
+    return result;
+  }
 
   @SuppressWarnings("fallthrough")
   private static void addFieldSchema(ResultSetMetaData metadata, int col,
